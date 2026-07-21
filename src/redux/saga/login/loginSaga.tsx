@@ -33,6 +33,7 @@ function* fetchUserLoginSaga(action: any): Generator<any, void, any> {
         // ✅ Token handling
         if (data?.data?.authToken) {
             localStorage.setItem("authToken", data?.data?.authToken);
+            localStorage.setItem("user_id", data?.data?.id);
             setCookie("authToken", data?.data?.authToken);
             setAuthHeader(data?.data?.authToken);
         }
