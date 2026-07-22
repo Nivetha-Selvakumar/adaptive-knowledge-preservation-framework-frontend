@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { GlassCard } from '../../common-component/GlassCard';
 import { TextBox } from '../../common-component/TextBox';
 import { Button } from '../../common-component/Button';
@@ -9,25 +9,34 @@ import type { ResetPasswordRequestDto } from '../../types/auth';
 import { images } from '../../assets';
 
 import LockIcon from '@mui/icons-material/Lock';
-import KeyIcon from '@mui/icons-material/Key';
+// import KeyIcon from '@mui/icons-material/Key';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useDispatch, useSelector } from 'react-redux';
+import { RESET_PASSWORD_CLEAR, RESET_PASSWORD_REQUEST } from '../../redux/actionTypes/auth/resetPasswordActionTypes';
 
 export const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { resetPassword, resetPasswordLoading } = useSelector(
+    (state: any) => state.resetPasswordReducer
+  );
+  const [searchParams] = useSearchParams();
+
+  const token = searchParams.get("token") || "";
   const { theme, toggleTheme } = useTheme();
 
-  const [formData, setFormData] = useState<ResetPasswordRequestDto>({
-    email: '',
-    token: 'RESET-KEY-9821',
-    newPassword: '',
-    confirmPassword: ''
+  const [formData, setFormData] = useState({
+    token: token,
+    newPassword: "",
+    confirmPassword: ""
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof ResetPasswordRequestDto, string>>>({});
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const calculateStrength = (pass: string) => {
     if (!pass) return { score: 0, label: 'None', color: 'var(--text-muted)' };
@@ -47,7 +56,10 @@ export const ResetPasswordPage: React.FC = () => {
   const validate = (): boolean => {
     const errs: Partial<Record<keyof ResetPasswordRequestDto, string>> = {};
 
-    if (!formData.token?.trim()) errs.token = 'Reset security token is required';
+    if (!token) {
+      showToast("Invalid or expired reset link.", "error");
+      return;
+    }
     if (!formData.newPassword) {
       errs.newPassword = 'New password is required';
     } else if (formData.newPassword.length < 8) {
@@ -64,16 +76,37 @@ export const ResetPasswordPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return;
 
-    setIsLoading(true);
+    if (!token) {
+      showToast("Invalid or expired reset link.", "error");
+      return;
+    }
 
-    setTimeout(() => {
-      setIsLoading(false);
-      showToast('Password updated successfully! Please sign in.', 'success');
-      navigate('/login');
-    }, 1200);
+    dispatch({
+      type: RESET_PASSWORD_REQUEST,
+      payload: {
+        token,
+        newPassword: formData.newPassword,
+      },
+    });
   };
+
+  useEffect(() => {
+    if (
+      resetPassword &&
+      (resetPassword.code === 200 || resetPassword.code === 201)
+    ) {
+      showToast(resetPassword.message, "success");
+
+      dispatch({
+        type: RESET_PASSWORD_CLEAR,
+      });
+
+      navigate("/login");
+    }
+  }, [resetPassword, dispatch, navigate]);
 
   return (
     <div
@@ -140,14 +173,14 @@ export const ResetPasswordPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <TextBox
+              {/* <TextBox
                 label="Reset Security Token"
                 leftIcon={<KeyIcon fontSize="small" />}
                 value={formData.token}
                 onChange={(e) => setFormData({ ...formData, token: e.target.value })}
                 error={errors.token}
                 required
-              />
+              /> */}
 
               <TextBox
                 label="New Password"
@@ -196,7 +229,7 @@ export const ResetPasswordPage: React.FC = () => {
                 variant="primary"
                 size="lg"
                 fullWidth
-                isLoading={isLoading}
+                isLoading={resetPasswordLoading}
                 startIcon={<CheckCircleIcon />}
               >
                 Update Password

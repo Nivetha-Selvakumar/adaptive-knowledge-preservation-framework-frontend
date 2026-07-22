@@ -256,7 +256,7 @@ export default function LoginPage() {
             >
               <span>Don't have an account?</span>
               <Link
-                to="/create-user"
+                to="/signup"
                 style={{
                   color: 'var(--accent-purple)',
                   fontWeight: 700,

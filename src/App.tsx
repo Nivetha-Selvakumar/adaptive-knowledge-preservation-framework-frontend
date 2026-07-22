@@ -4,6 +4,7 @@ import { CreateUserPage } from './components/auth/CreateUserPage';
 import { ForgotPasswordPage } from './components/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './components/auth/ResetPasswordPage';
 import { DashboardPage } from './components/dashboard/DashboardPage';
+import { SignupPage } from './components/auth/SignupPage';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/create-user" element={<CreateUserPage />} />
-        <Route path="/signup" element={<CreateUserPage />} />
+        <Route path="/signup" element={<SignupPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 

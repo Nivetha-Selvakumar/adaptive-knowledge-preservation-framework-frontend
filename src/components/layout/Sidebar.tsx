@@ -1,14 +1,22 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
+// import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import LockResetIcon from '@mui/icons-material/LockReset';
+// import VpnKeyIcon from '@mui/icons-material/VpnKey';
+// import LockResetIcon from '@mui/icons-material/LockReset';
 import LogoutIcon from '@mui/icons-material/Logout';
 // import SettingsIcon from '@mui/icons-material/Settings';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { Badge } from '../../common-component/Badge';
+import CloudDoneIcon from '@mui/icons-material/CloudDone';
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import CloudIcon from "@mui/icons-material/Cloud";
+import EmailIcon from "@mui/icons-material/Email";
+import GroupsIcon from "@mui/icons-material/Groups";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import CodeIcon from "@mui/icons-material/Code";
+import CloudQueueIcon from "@mui/icons-material/CloudQueue";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -19,26 +27,104 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onOpenLogoutModal }
   const navigate = useNavigate();
   const location = useLocation();
 
+  // const menuSections = [
+  //   {
+  //     title: 'KNOWLEDGE PLATFORM',
+  //     items: [
+  //       { label: 'Knowledge Hub', path: '/dashboard', icon: <DashboardIcon /> },
+  //       { label: 'Agent Fleet & GitHub', path: '/agents', icon: <SmartToyIcon />, badge: 'Live Stream' },
+  //       { label: 'Create New User', path: '/create-user', icon: <PersonAddIcon /> }
+  //     ]
+  //   },
+  //   {
+  //     title: 'SECURITY & AUTH',
+  //     items: [
+  //       { label: 'Login Screen', path: '/login', icon: <VpnKeyIcon /> },
+  //       { label: 'Forgot Password', path: '/forgot-password', icon: <LockResetIcon /> },
+  //       { label: 'Reset Password', path: '/reset-password', icon: <LockResetIcon /> },
+  //       { label: 'Logout Flow', path: '/logout', icon: <LogoutIcon />, danger: true }
+  //     ]
+  //   }
+  // ];
+
   const menuSections = [
     {
-      title: 'KNOWLEDGE PLATFORM',
+      title: "DASHBOARD",
       items: [
-        { label: 'Knowledge Hub', path: '/dashboard', icon: <DashboardIcon /> },
-        { label: 'Agent Fleet & GitHub', path: '/agents', icon: <SmartToyIcon />, badge: 'Live Stream' },
-        { label: 'Create New User', path: '/create-user', icon: <PersonAddIcon /> }
-      ]
+        {
+          label: "Dashboard",
+          path: "/dashboard",
+          icon: <DashboardIcon />,
+        },
+      ],
     },
     {
-      title: 'SECURITY & AUTH',
+      title: "ENTERPRISE APPLICATIONS",
       items: [
-        { label: 'Login Screen', path: '/login', icon: <VpnKeyIcon /> },
-        { label: 'Forgot Password', path: '/forgot-password', icon: <LockResetIcon /> },
-        { label: 'Reset Password', path: '/reset-password', icon: <LockResetIcon /> },
-        { label: 'Logout Flow', path: '/logout', icon: <LogoutIcon />, danger: true }
-      ]
-    }
+        {
+          label: "GitHub",
+          path: "/github",
+          icon: <GitHubIcon />,
+        },
+        {
+          label: "Jira",
+          path: "/jira",
+          icon: <AssignmentIcon />,
+        },
+        {
+          label: "Google Drive",
+          path: "/drive",
+          icon: <CloudIcon />,
+        },
+        {
+          label: "Outlook",
+          path: "/outlook",
+          icon: <EmailIcon />,
+        },
+        {
+          label: "Microsoft Teams",
+          path: "/teams",
+          icon: <GroupsIcon />,
+        },
+        {
+          label: "Confluence",
+          path: "/confluence",
+          icon: <MenuBookIcon />,
+        },
+        {
+          label: "GitLab",
+          path: "/gitlab",
+          icon: <CodeIcon />,
+        },
+        {
+          label: "OneDrive",
+          path: "/onedrive",
+          icon: <CloudQueueIcon />,
+        },
+      ],
+    },
+    {
+      title: "ADMINISTRATION",
+      items: [
+        {
+          label: "Users",
+          path: "/create-user",
+          icon: <PersonAddIcon />,
+        },
+      ],
+    },
+    {
+      title: "SYSTEM",
+      items: [
+        {
+          label: "Logout",
+          path: "/logout",
+          icon: <LogoutIcon />,
+          danger: true,
+        },
+      ],
+    },
   ];
-
   return (
     <aside
       style={{
@@ -155,7 +241,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onOpenLogoutModal }
             background: 'var(--bg-input)'
           }}
         >
-          <GitHubIcon style={{ color: 'var(--accent-purple)' }} />
+          {/* <GitHubIcon style={{ color: 'var(--accent-purple)' }} />
           <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               GitHub Stream Sync
@@ -163,11 +249,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onOpenLogoutModal }
             <span style={{ fontSize: '0.68rem', color: 'var(--accent-emerald)' }}>
               ● 24/7 Agent Monitoring
             </span>
+          </div> */}
+          <CloudDoneIcon style={{ color: 'var(--accent-emerald)' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              Enterprise Memory Sync
+            </span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--accent-emerald)' }}>
+              ● Active
+            </span>
           </div>
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <GitHubIcon style={{ color: 'var(--accent-purple)' }} />
+          <CloudDoneIcon style={{ color: 'var(--accent-emerald)' }} />
         </div>
       )}
     </aside>

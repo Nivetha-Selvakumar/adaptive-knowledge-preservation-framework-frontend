@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { GlassCard } from '../../common-component/GlassCard';
 import { TextBox } from '../../common-component/TextBox';
 import { SelectDropdown } from '../../common-component/SelectDropdown';
 import { Button } from '../../common-component/Button';
 import { Badge } from '../../common-component/Badge';
-import { useTheme } from '../../context/ThemeContext';
 import type { CreateUserRequestDto } from '../../types/auth';
 import { images } from '../../assets';
 import { useDispatch, useSelector } from "react-redux";
@@ -25,9 +24,8 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import WcIcon from '@mui/icons-material/Wc';
 import WorkIcon from '@mui/icons-material/Work';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
+// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { MainLayout } from '../layout/MainLayout';
 
 
 const createUserSchema = Yup.object().shape({
@@ -47,7 +45,6 @@ export const CreateUserPage: React.FC = () => {
   const dispatch = useDispatch();
 
   const { createUser, createUserLoading, } = useSelector((state: any) => state.createUserReducer);
-  const { theme, toggleTheme } = useTheme();
 
   const [formData, setFormData] = useState<CreateUserRequestDto>({
     firstName: '',
@@ -149,217 +146,200 @@ export const CreateUserPage: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1.5rem',
-        position: 'relative'
-      }}
-    >
-      {/* THEME TOGGLE BUTTON TOP RIGHT */}
-      <button
-        type="button"
-        onClick={toggleTheme}
-        title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-        style={{
-          position: 'absolute',
-          top: '1.5rem',
-          right: '1.5rem',
-          background: 'var(--bg-glass)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid var(--border-color)',
-          color: 'var(--text-primary)',
-          width: '44px',
-          height: '44px',
-          borderRadius: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          zIndex: 50,
-          transition: 'transform 0.25s ease'
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-      >
-        {theme === 'dark' ? <LightModeIcon style={{ color: '#f59e0b' }} /> : <DarkModeIcon style={{ color: '#7c3aed' }} />}
-      </button>
+    <>
+      <MainLayout>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            // padding: "1rem 0",
+          }}
+        >
+          {/* THEME TOGGLE BUTTON TOP RIGHT */}
+          {/* <button
+            type="button"
+            onClick={toggleTheme}
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            style={{
+              position: 'absolute',
+              top: '1.5rem',
+              right: '1.5rem',
+              background: 'var(--bg-glass)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-primary)',
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 50,
+              transition: 'transform 0.25s ease'
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            {theme === 'dark' ? <LightModeIcon style={{ color: '#f59e0b' }} /> : <DarkModeIcon style={{ color: '#7c3aed' }} />}
+          </button> */}
 
-      <div style={{ width: '100%', maxWidth: '780px' }}>
-        <GlassCard glow hoverEffect={false}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-            {/* HEADER */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <img
-                  src={images.DARK_FAVICON}
-                  alt="Logo"
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    objectFit: 'contain'
-                  }}
-                />
-                <div>
-                  <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-                    Create User Account
-                  </h1>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    Fill in your details to register your new account
-                  </span>
+          <div style={{ width: "100%", maxWidth: "980px", }}>
+            <GlassCard glow hoverEffect={false}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+                {/* HEADER */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                    <img
+                      src={images.DARK_FAVICON}
+                      alt="Logo"
+                      style={{
+                        width: '48px',
+                        height: '48px',
+                        objectFit: 'contain'
+                      }}
+                    />
+                    <div>
+                      <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                        Create User Account
+                      </h1>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                        Create a new enterprise user and assign the appropriate role.
+                      </span>
+                    </div>
+                  </div>
+
+                  <Badge variant="cyan" icon={<PersonAddIcon fontSize="small" />}>
+                    Administration
+                  </Badge>
                 </div>
+
+                {/* FORM */}
+                <form noValidate onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {/* FIRST & LAST NAME */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                    <TextBox
+                      label="First Name"
+                      placeholder="First Name"
+                      leftIcon={<PersonIcon fontSize="small" />}
+                      value={formData.firstName}
+                      onChange={(e) => handleFieldChange('firstName', e.target.value)}
+                      error={errors.firstName}
+                      required
+                    />
+
+                    <TextBox
+                      label="Last Name"
+                      placeholder="Last Name"
+                      leftIcon={<PersonIcon fontSize="small" />}
+                      value={formData.lastName}
+                      onChange={(e) => handleFieldChange('lastName', e.target.value)}
+                      error={errors.lastName}
+                      required
+                    />
+                  </div>
+
+                  {/* EMAIL & PHONE */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                    <TextBox
+                      label="Email Address"
+                      type="email"
+                      placeholder="user@example.com"
+                      leftIcon={<EmailIcon fontSize="small" />}
+                      value={formData.email}
+                      onChange={(e) => handleFieldChange('email', e.target.value)}
+                      error={errors.email}
+                      required
+                    />
+
+                    <TextBox
+                      label="Phone Number"
+                      placeholder="+1 (555) 000-0000"
+                      leftIcon={<PhoneIcon fontSize="small" />}
+                      value={formData.phoneNumber}
+                      onChange={(e) => handleFieldChange('phoneNumber', e.target.value)}
+                      error={errors.phoneNumber}
+                      required
+                    />
+                  </div>
+
+                  {/* PASSWORD & DOB */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                    <TextBox
+                      label="Password"
+                      type="password"
+                      placeholder="••••••••••••"
+                      leftIcon={<LockIcon fontSize="small" />}
+                      value={formData.password}
+                      onChange={(e) => handleFieldChange('password', e.target.value)}
+                      error={errors.password}
+                      required
+                    />
+
+                    <TextBox
+                      label="Date of Birth"
+                      type="date"
+                      leftIcon={<CalendarTodayIcon fontSize="small" />}
+                      value={formData.dob}
+                      onChange={(e) => handleFieldChange('dob', e.target.value)}
+                      error={errors.dob}
+                      required
+                    />
+                  </div>
+
+                  {/* GENDER & ROLE */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                    <SelectDropdown
+                      label="Gender / Sex"
+                      options={sexOptions}
+                      leftIcon={<WcIcon fontSize="small" />}
+                      value={formData.sex}
+                      onChange={(e) => handleFieldChange('sex', e.target.value)}
+                      error={errors.sex}
+                      required
+                    />
+
+                    <SelectDropdown
+                      label="User Role"
+                      options={roleOptions}
+                      leftIcon={<WorkIcon fontSize="small" />}
+                      value={formData.role}
+                      onChange={(e) => handleFieldChange('role', e.target.value)}
+                      error={errors.role}
+                      required
+                    />
+                  </div>
+
+                  {/* ADDRESS */}
+                  <TextBox
+                    label="Address"
+                    multiline
+                    rows={2}
+                    placeholder="123 Main Street, City, Country"
+                    leftIcon={<HomeIcon fontSize="small" />}
+                    value={formData.address}
+                    onChange={(e) => handleFieldChange('address', e.target.value)}
+                    error={errors.address}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    isLoading={createUserLoading}
+                    startIcon={<PersonAddIcon />}
+                    style={{ marginTop: '0.5rem' }}
+                  >
+                    Create User
+                  </Button>
+                </form>
               </div>
-
-              <Badge variant="cyan" icon={<PersonAddIcon fontSize="small" />}>
-                New Registration
-              </Badge>
-            </div>
-
-            {/* FORM */}
-            <form noValidate onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {/* FIRST & LAST NAME */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                <TextBox
-                  label="First Name"
-                  placeholder="First Name"
-                  leftIcon={<PersonIcon fontSize="small" />}
-                  value={formData.firstName}
-                  onChange={(e) => handleFieldChange('firstName', e.target.value)}
-                  error={errors.firstName}
-                  required
-                />
-
-                <TextBox
-                  label="Last Name"
-                  placeholder="Last Name"
-                  leftIcon={<PersonIcon fontSize="small" />}
-                  value={formData.lastName}
-                  onChange={(e) => handleFieldChange('lastName', e.target.value)}
-                  error={errors.lastName}
-                  required
-                />
-              </div>
-
-              {/* EMAIL & PHONE */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                <TextBox
-                  label="Email Address"
-                  type="email"
-                  placeholder="user@example.com"
-                  leftIcon={<EmailIcon fontSize="small" />}
-                  value={formData.email}
-                  onChange={(e) => handleFieldChange('email', e.target.value)}
-                  error={errors.email}
-                  required
-                />
-
-                <TextBox
-                  label="Phone Number"
-                  placeholder="+1 (555) 000-0000"
-                  leftIcon={<PhoneIcon fontSize="small" />}
-                  value={formData.phoneNumber}
-                  onChange={(e) => handleFieldChange('phoneNumber', e.target.value)}
-                  error={errors.phoneNumber}
-                  required
-                />
-              </div>
-
-              {/* PASSWORD & DOB */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                <TextBox
-                  label="Password"
-                  type="password"
-                  placeholder="••••••••••••"
-                  leftIcon={<LockIcon fontSize="small" />}
-                  value={formData.password}
-                  onChange={(e) => handleFieldChange('password', e.target.value)}
-                  error={errors.password}
-                  required
-                />
-
-                <TextBox
-                  label="Date of Birth"
-                  type="date"
-                  leftIcon={<CalendarTodayIcon fontSize="small" />}
-                  value={formData.dob}
-                  onChange={(e) => handleFieldChange('dob', e.target.value)}
-                  error={errors.dob}
-                  required
-                />
-              </div>
-
-              {/* GENDER & ROLE */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                <SelectDropdown
-                  label="Gender / Sex"
-                  options={sexOptions}
-                  leftIcon={<WcIcon fontSize="small" />}
-                  value={formData.sex}
-                  onChange={(e) => handleFieldChange('sex', e.target.value)}
-                  error={errors.sex}
-                  required
-                />
-
-                <SelectDropdown
-                  label="User Role"
-                  options={roleOptions}
-                  leftIcon={<WorkIcon fontSize="small" />}
-                  value={formData.role}
-                  onChange={(e) => handleFieldChange('role', e.target.value)}
-                  error={errors.role}
-                  required
-                />
-              </div>
-
-              {/* ADDRESS */}
-              <TextBox
-                label="Address"
-                multiline
-                rows={2}
-                placeholder="123 Main Street, City, Country"
-                leftIcon={<HomeIcon fontSize="small" />}
-                value={formData.address}
-                onChange={(e) => handleFieldChange('address', e.target.value)}
-                error={errors.address}
-              />
-
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                fullWidth
-                isLoading={createUserLoading}
-                startIcon={<PersonAddIcon />}
-                style={{ marginTop: '0.5rem' }}
-              >
-                Create Account
-              </Button>
-            </form>
-
-            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
-              <Link
-                to="/login"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  fontWeight: 600
-                }}
-              >
-                <ArrowBackIcon fontSize="small" />
-                Already have an account? Sign In
-              </Link>
-            </div>
+            </GlassCard>
           </div>
-        </GlassCard>
-      </div>
-    </div>
+        </div>
+      </MainLayout>
+    </>
   );
 };

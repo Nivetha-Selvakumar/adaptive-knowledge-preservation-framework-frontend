@@ -4,6 +4,9 @@ import { watchFetchUserLoginData } from "./saga/login/loginSaga";
 import { watchFetchCreateUserData } from "./saga/auth/createUserSaga";
 import { watchFetchUserLogoutData } from "./saga/auth/logoutSaga";
 import { watchForgotPassword } from "./saga/auth/forgetPasswordSaga";
+import { watchResetPassword } from "./saga/auth/resetPasswordSaga";
+import { watchFetchGithubCallback } from "./saga/github/githubCallbackSaga";
+import { watchFetchGithubConnect } from "./saga/github/githubConnectSaga";
 
 export default function* rootSaga() {
     yield all([
@@ -11,6 +14,10 @@ export default function* rootSaga() {
         watchFetchCreateUserData(),
         watchFetchUserLogoutData(),
         watchForgotPassword(),
+        watchResetPassword(),
+        watchFetchGithubCallback(),
+        watchFetchGithubConnect(),
+
 
 
     ]);
