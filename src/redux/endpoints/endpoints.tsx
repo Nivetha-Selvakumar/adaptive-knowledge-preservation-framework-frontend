@@ -8,5 +8,6 @@ export const AUTH = {
     RESET_PASSWORD: `${API_BASE_URL}/auth/reset-password`,
     GITHUB_CONNECT: `${API_BASE_URL}/github/connect`,
     GITHUB_CALLBACK: `${API_BASE_URL}/github/callback`,
+    GITHUB_SYNC: `${API_BASE_URL}/github/sync`,
 
 };

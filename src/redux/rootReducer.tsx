@@ -6,6 +6,7 @@ import ForgotPasswordReducer from "./reducers/auth/forgetPasswordReducer";
 import ResetPasswordReducer from "./reducers/auth/resetPasswordReducer";
 import GithubCallbackReducer from "./reducers/github/githubCallbackReducer";
 import GithubConnectReducer from "./reducers/github/githubConnectReducer";
+import GithubSyncReducer from "./reducers/github/githubSyncReducer";
 
 const rootReducer = combineReducers({
    userLoginReducer: UserLoginReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
    resetPasswordReducer: ResetPasswordReducer,
    githubCallbackReducer: GithubCallbackReducer,
    githubConnectReducer: GithubConnectReducer,
+   githubSyncReducer: GithubSyncReducer,
 
 
 });

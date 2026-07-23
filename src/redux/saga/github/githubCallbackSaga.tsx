@@ -1,58 +1,58 @@
-import { call, put, takeLatest } from "redux-saga/effects";
-import axios from "axios";
+// import { call, put, takeLatest } from "redux-saga/effects";
+// import axios from "axios";
 
-import { AUTH } from "../../endpoints/endpoints";
+// import { AUTH } from "../../endpoints/endpoints";
 
 
 
-import showToast from "../../../common-component/toastNotification";
-import { fetchGithubCallbackFailure, fetchGithubCallbackSuccess } from "../../actions/github/githubCallbackAction";
-import { GITHUB_CALLBACK_REQUEST } from "../../actionTypes/github/githubCallbackActionTypes";
+// import showToast from "../../../common-component/toastNotification";
+// import { fetchGithubCallbackFailure, fetchGithubCallbackSuccess } from "../../actions/github/githubCallbackAction";
+// import { GITHUB_CALLBACK_REQUEST } from "../../actionTypes/github/githubCallbackActionTypes";
 
-let isPrevent = false;
+// let isPrevent = false;
 
-function* fetchGithubCallbackSaga(action: any): Generator<any, void, any> {
+// function* fetchGithubCallbackSaga(action: any): Generator<any, void, any> {
 
-    if (isPrevent) return;
+//     if (isPrevent) return;
 
-    try {
+//     try {
 
-        isPrevent = true;
+//         isPrevent = true;
 
-        const response = yield call(
-            axios.get,
-            `${AUTH.GITHUB_CALLBACK}?code=${action.payload.code}`
-        );
+//         const response = yield call(
+//             axios.get,
+//             `${AUTH.GITHUB_CALLBACK}?code=${action.payload.code}`
+//         );
 
-        const data = response.data;
+//         const data = response.data;
 
-        yield put(fetchGithubCallbackSuccess(data));
+//         yield put(fetchGithubCallbackSuccess(data));
 
-        showToast("GitHub connected successfully.", "success");
+//         showToast("GitHub connected successfully.", "success");
 
-    } catch (error: any) {
+//     } catch (error: any) {
 
-        const message =
-            error?.response?.data?.message ||
-            "GitHub authorization failed.";
+//         const message =
+//             error?.response?.data?.message ||
+//             "GitHub authorization failed.";
 
-        yield put(fetchGithubCallbackFailure(message));
+//         yield put(fetchGithubCallbackFailure(message));
 
-        showToast(message, "error");
+//         showToast(message, "error");
 
-    } finally {
+//     } finally {
 
-        isPrevent = false;
+//         isPrevent = false;
 
-    }
+//     }
 
-}
+// }
 
-export function* watchFetchGithubCallback() {
+// export function* watchFetchGithubCallback() {
 
-    yield takeLatest(
-        GITHUB_CALLBACK_REQUEST,
-        fetchGithubCallbackSaga
-    );
+//     yield takeLatest(
+//         GITHUB_CALLBACK_REQUEST,
+//         fetchGithubCallbackSaga
+//     );
 
-}
+// }

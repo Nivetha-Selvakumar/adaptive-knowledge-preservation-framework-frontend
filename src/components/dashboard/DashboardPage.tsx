@@ -24,8 +24,9 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import { fetchGithubConnectFailure, fetchGithubConnectSuccess } from '../../redux/actions/github/githubConnectAction';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { GITHUB_CONNECT_REQUEST } from '../../redux/actionTypes/github/githubConnectActionTypes';
+import { GITHUB_SYNC_REQUEST } from "../../redux/actionTypes/github/githubSyncActionTypes";
 
 interface HistoryItem {
   id: string;
@@ -164,6 +165,8 @@ export const DashboardPage: React.FC = () => {
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
   };
 
+  const { githubSync, githubSyncLoading, } = useSelector((state: any) => state.githubSyncReducer);
+
   // --- Authorize flow ---------------------------------------------------
   // Replace the body of this function with your real OAuth kick-off, e.g.:
   //   window.location.href = `/api/integrations/${id}/authorize`;
@@ -181,24 +184,73 @@ export const DashboardPage: React.FC = () => {
 
   };
 
+  const handleSync = (id: string) => {
 
+    if (id === "github") {
+
+      dispatch({
+        type: GITHUB_SYNC_REQUEST
+      });
+
+    }
+
+  };
   useEffect(() => {
 
     const params = new URLSearchParams(window.location.search);
 
     if (params.get("github") === "connected") {
 
+      updateApp("github", {
+        connected: true,
+        connecting: false,
+        lastSynced: new Date().toLocaleString()
+      });
+
       dispatch(fetchGithubConnectSuccess("GitHub connection successful"));
+
+      window.history.replaceState({}, "", "/dashboard");
 
     }
 
     if (params.get("github") === "failed") {
 
+      updateApp("github", {
+        connected: false,
+        connecting: false
+      });
+
       dispatch(fetchGithubConnectFailure("GitHub connection failed"));
+
+      window.history.replaceState({}, "", "/dashboard");
 
     }
 
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+
+    if (!githubSync) return;
+
+    const history = (githubSync.repositories || []).map((repo: any) => ({
+
+      id: repo.id.toString(),
+
+      title: repo.name,
+
+      time: repo.updated_at
+
+    }));
+
+    updateApp("github", {
+
+      lastSynced: new Date().toLocaleString(),
+
+      history
+
+    });
+
+  }, [githubSync]);
 
   const handleDisconnect = (id: string) => {
     updateApp(id, {
@@ -466,6 +518,15 @@ export const DashboardPage: React.FC = () => {
                   ) : (
                     <>
                       <Button
+                        variant="primary"
+                        size="sm"
+                        isLoading={githubSyncLoading}
+                        onClick={() => handleSync(app.id)}
+                      >
+                        Sync
+                      </Button>
+
+                      <Button
                         variant="glass"
                         size="sm"
                         startIcon={app.historyOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -473,8 +534,9 @@ export const DashboardPage: React.FC = () => {
                         onClick={() => handleToggleHistory(app.id)}
                         style={{ flex: 1 }}
                       >
-                        {app.historyOpen ? 'Hide History' : 'View History'}
+                        {app.historyOpen ? "Hide History" : "View History"}
                       </Button>
+
                       <Button
                         variant="secondary"
                         size="sm"
