@@ -9,5 +9,6 @@ export const AUTH = {
     GITHUB_CONNECT: `${API_BASE_URL}/github/connect`,
     GITHUB_CALLBACK: `${API_BASE_URL}/github/callback`,
     GITHUB_SYNC: `${API_BASE_URL}/github/sync`,
+    DASHBOARD_SUMMARY: `${API_BASE_URL}/dashboard/summary`
 
 };

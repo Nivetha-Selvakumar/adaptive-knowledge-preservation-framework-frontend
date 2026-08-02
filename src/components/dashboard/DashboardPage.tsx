@@ -27,6 +27,8 @@ import { fetchGithubConnectFailure, fetchGithubConnectSuccess } from '../../redu
 import { useDispatch, useSelector } from 'react-redux';
 import { GITHUB_CONNECT_REQUEST } from '../../redux/actionTypes/github/githubConnectActionTypes';
 import { GITHUB_SYNC_REQUEST } from "../../redux/actionTypes/github/githubSyncActionTypes";
+import { DASHBOARD_SUMMARY_REQUEST } from "../../redux/actionTypes/dashboard/dashboardSummaryActionTypes";
+import { GITHUB_HISTORY_REQUEST } from "../../redux/actionTypes/github/githubHistoryActionTypes";
 
 interface HistoryItem {
   id: string;
@@ -158,15 +160,23 @@ const initialApps: IntegrationApp[] = [
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const firstName = localStorage.getItem('firstName');
+  const firstName = localStorage.getItem("firstName") ?? "User";
   const [apps, setApps] = useState<IntegrationApp[]>(initialApps);
 
+  // const updateApp = (id: string, patch: Partial<IntegrationApp>) => {
+  //   setApps((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+  // };
+
   const updateApp = (id: string, patch: Partial<IntegrationApp>) => {
-    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+    setApps((previousApps) => previousApps.map((application) => application.id === id ? {
+      ...application, ...patch
+    } : application));
   };
 
   const { githubSync, githubSyncLoading, } = useSelector((state: any) => state.githubSyncReducer);
-
+  const { dashboardSummary, dashboardSummaryLoading } = useSelector((state: any) => state.dashboardSummaryReducer);
+  const { githubHistory, githubHistoryLoading } = useSelector((state: any) => state.githubHistoryReducer);
+  const { githubConnect } = useSelector((state: any) => state.githubConnectReducer);
   // --- Authorize flow ---------------------------------------------------
   // Replace the body of this function with your real OAuth kick-off, e.g.:
   //   window.location.href = `/api/integrations/${id}/authorize`;
@@ -175,11 +185,7 @@ export const DashboardPage: React.FC = () => {
   const handleConnect = (id: string) => {
 
     if (id === "github") {
-
-      dispatch({
-        type: GITHUB_CONNECT_REQUEST
-      });
-
+      dispatch({ type: GITHUB_CONNECT_REQUEST });
     }
 
   };
@@ -229,28 +235,16 @@ export const DashboardPage: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (githubSync?.status !== 200) { return; }
+    dispatch({ type: DASHBOARD_SUMMARY_REQUEST });
+    dispatch({ type: GITHUB_HISTORY_REQUEST });
+    updateApp("github", { lastSynced: new Date().toLocaleString() });
+  }, [githubSync, dispatch]);
 
-    if (!githubSync) return;
-
-    const history = (githubSync.repositories || []).map((repo: any) => ({
-
-      id: repo.id.toString(),
-
-      title: repo.name,
-
-      time: repo.updated_at
-
-    }));
-
-    updateApp("github", {
-
-      lastSynced: new Date().toLocaleString(),
-
-      history
-
-    });
-
-  }, [githubSync]);
+  useEffect(() => {
+    if (githubConnect?.status !== 200) { return; }
+    updateApp("github", { connected: true, connecting: false });
+  }, [githubConnect]);
 
   const handleDisconnect = (id: string) => {
     updateApp(id, {
@@ -264,62 +258,56 @@ export const DashboardPage: React.FC = () => {
   // --- History fetch ------------------------------------------------------
   // Replace the fetch URL with your real endpoint. Expected shape:
   //   { items: [{ id, title, time }] }
-  const handleToggleHistory = async (id: string) => {
+
+  const handleToggleHistory = (id: string) => {
+
     const app = apps.find((a) => a.id === id);
+
     if (!app) return;
 
-    if (app.historyOpen) {
-      updateApp(id, { historyOpen: false });
-      return;
-    }
+    updateApp(id, { historyOpen: !app.historyOpen });
 
-    if (app.history.length > 0) {
-      updateApp(id, { historyOpen: true });
-      return;
-    }
-
-    updateApp(id, { historyOpen: true, historyLoading: true });
-    try {
-      const res = await fetch(`/api/integrations/${id}/history`);
-      if (!res.ok) throw new Error('history fetch failed');
-      const data = await res.json();
-      updateApp(id, { history: data.items ?? [], historyLoading: false });
-    } catch {
-      // Demo fallback data - remove once /api/integrations/:id/history exists.
-      await new Promise((r) => setTimeout(r, 700));
-      updateApp(id, {
-        historyLoading: false,
-        history: [
-          { id: `${id}-1`, title: `Recent activity synced from ${app.name}`, time: '12 mins ago' },
-          { id: `${id}-2`, title: `Older activity synced from ${app.name}`, time: '3 hours ago' }
-        ]
-      });
-    }
+    if (!app.historyOpen) { dispatch({ type: GITHUB_HISTORY_REQUEST }); }
   };
 
-  const connectedCount = apps.filter((a) => a.connected).length;
-  const totalHistoryItems = apps.reduce((sum, a) => sum + a.history.length, 0);
+  // const connectedCount = apps.filter((a) => a.connected).length;
+  // const totalHistoryItems = apps.reduce((sum, a) => sum + a.history.length, 0);
 
   const statCards = [
     {
       title: 'Connected Apps',
-      value: `${connectedCount} / ${apps.length}`,
-      change: connectedCount > 0 ? 'Syncing enabled' : 'Nothing connected yet',
+      // value: dashboardSummaryLoading ? "..." :
+      value: dashboardSummary?.data?.connectedApps ?? "0",
+      change: "Connected Enterprise Applications",
       icon: <AppsIcon style={{ color: 'var(--accent-cyan)' }} />
     },
     {
       title: 'History Items Pulled',
-      value: `${totalHistoryItems}`,
-      change: 'Across connected apps',
+      // value: dashboardSummaryLoading ? "..." : 
+      value: dashboardSummary?.data?.totalHistoryItems ?? "0",
+      change: "Knowledge History",
       icon: <HistoryIcon style={{ color: 'var(--accent-purple)' }} />
     },
     {
       title: 'Pending Authorizations',
-      value: `${apps.length - connectedCount}`,
-      change: 'Waiting to connect',
+      // value: dashboardSummaryLoading ? "..." :
+      value: dashboardSummary?.data?.pendingApps ?? "0",
+      change: "Waiting for Connection",
       icon: <LinkOffIcon style={{ color: 'var(--accent-rose)' }} />
+    },
+    {
+      title: "Repositories",
+      // value: dashboardSummaryLoading ? "..." : 
+      value: dashboardSummary?.data?.totalRepositories ?? "0",
+      change: "Repositories Synced",
+      icon: <GitHubIcon style={{ color: "var(--accent-emerald)" }} />
     }
   ];
+
+  useEffect(() => {
+    dispatch({ type: DASHBOARD_SUMMARY_REQUEST });
+    dispatch({ type: GITHUB_HISTORY_REQUEST });
+  }, [dispatch]);
 
   return (
     <MainLayout>
@@ -558,37 +546,70 @@ export const DashboardPage: React.FC = () => {
                       borderTop: '1px solid var(--border-color)'
                     }}
                   >
-                    {app.historyLoading ? (
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                        Fetching history…
+                    {githubHistoryLoading ? (
+
+                      <span
+                        style={{
+                          fontSize: "0.78rem",
+                          color: "var(--text-muted)"
+                        }}
+                      >
+                        Fetching history...
                       </span>
-                    ) : app.history.length === 0 ? (
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                        No history found yet.
+
+                    ) : (githubHistory?.data?.length === 0 ? (
+
+                      <span
+                        style={{
+                          fontSize: "0.78rem",
+                          color: "var(--text-muted)"
+                        }}
+                      >
+                        No history found.
                       </span>
+
                     ) : (
-                      app.history.map((item) => (
+
+                      githubHistory?.data?.map((item: any) => (
+
                         <div
                           key={item.id}
                           style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '0.15rem',
-                            padding: '0.6rem 0.75rem',
-                            borderRadius: '8px',
-                            background: 'var(--bg-glass)',
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.25rem",
+                            padding: "0.75rem",
+                            borderRadius: "8px",
+                            background: "var(--bg-glass)",
                             borderLeft: `3px solid var(${app.accentVar})`
                           }}
                         >
-                          <span style={{ fontSize: '0.82rem', color: 'var(--text-primary)', fontWeight: 600 }}>
-                            {item.title}
+                          <span
+                            style={{
+                              fontWeight: 700
+                            }}
+                          >{item.repositoryName}</span>
+                          <span>
+                            Branch :{item.defaultBranch}
                           </span>
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                            {item.time}
+                          <span>
+                            Commits :{item.commitCount}
+                          </span>
+                          <span>
+                            Issues :{item.issueCount}
+                          </span>
+                          <span>
+                            Pull Requests :{item.pullRequestCount}
+                          </span>
+                          <span>
+                            Status :{item.syncStatus}
+                          </span>
+                          <span>
+                            Synced :{item.syncedAt}
                           </span>
                         </div>
                       ))
-                    )}
+                    ))}
                   </div>
                 )}
               </div>
