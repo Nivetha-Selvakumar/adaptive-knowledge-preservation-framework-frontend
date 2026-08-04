@@ -5,6 +5,7 @@ import { ForgotPasswordPage } from './components/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './components/auth/ResetPasswordPage';
 import { DashboardPage } from './components/dashboard/DashboardPage';
 import { SignupPage } from './components/auth/SignupPage';
+import { GitHubPage } from './components/github/GithubPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
 
         {/* PROTECTED PLATFORM ROUTES */}
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/github" element={<GitHubPage />} />
         <Route path="/agents" element={<DashboardPage />} />
         <Route path="/settings" element={<DashboardPage />} />
 

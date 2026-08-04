@@ -10,7 +10,7 @@ import { fetchDashboardSummaryFailure, fetchDashboardSummarySuccess } from "../.
 
 let isPrevent = false;
 
-function* fetchDashboardSummarySaga(action: any): Generator<any, void, any> {
+function* fetchDashboardSummarySaga(): Generator<any, void, any> {
 
     if (isPrevent) return;
 

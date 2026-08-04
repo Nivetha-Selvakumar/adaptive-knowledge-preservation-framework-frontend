@@ -10,13 +10,13 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { Badge } from '../../common-component/Badge';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import CloudIcon from "@mui/icons-material/Cloud";
-import EmailIcon from "@mui/icons-material/Email";
-import GroupsIcon from "@mui/icons-material/Groups";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import CodeIcon from "@mui/icons-material/Code";
-import CloudQueueIcon from "@mui/icons-material/CloudQueue";
+// import AssignmentIcon from "@mui/icons-material/Assignment";
+// import CloudIcon from "@mui/icons-material/Cloud";
+// import EmailIcon from "@mui/icons-material/Email";
+// import GroupsIcon from "@mui/icons-material/Groups";
+// import MenuBookIcon from "@mui/icons-material/MenuBook";
+// import CodeIcon from "@mui/icons-material/Code";
+// import CloudQueueIcon from "@mui/icons-material/CloudQueue";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -59,48 +59,48 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onOpenLogoutModal }
       ],
     },
     {
-      title: "ENTERPRISE APPLICATIONS",
+      title: "CONNECTED SERVICES",
       items: [
         {
           label: "GitHub",
           path: "/github",
           icon: <GitHubIcon />,
         },
-        {
-          label: "Jira",
-          path: "/jira",
-          icon: <AssignmentIcon />,
-        },
-        {
-          label: "Google Drive",
-          path: "/drive",
-          icon: <CloudIcon />,
-        },
-        {
-          label: "Outlook",
-          path: "/outlook",
-          icon: <EmailIcon />,
-        },
-        {
-          label: "Microsoft Teams",
-          path: "/teams",
-          icon: <GroupsIcon />,
-        },
-        {
-          label: "Confluence",
-          path: "/confluence",
-          icon: <MenuBookIcon />,
-        },
-        {
-          label: "GitLab",
-          path: "/gitlab",
-          icon: <CodeIcon />,
-        },
-        {
-          label: "OneDrive",
-          path: "/onedrive",
-          icon: <CloudQueueIcon />,
-        },
+        // {
+        //   label: "Jira",
+        //   path: "/jira",
+        //   icon: <AssignmentIcon />,
+        // },
+        // {
+        //   label: "Google Drive",
+        //   path: "/drive",
+        //   icon: <CloudIcon />,
+        // },
+        // {
+        //   label: "Outlook",
+        //   path: "/outlook",
+        //   icon: <EmailIcon />,
+        // },
+        // {
+        //   label: "Microsoft Teams",
+        //   path: "/teams",
+        //   icon: <GroupsIcon />,
+        // },
+        // {
+        //   label: "Confluence",
+        //   path: "/confluence",
+        //   icon: <MenuBookIcon />,
+        // },
+        // {
+        //   label: "GitLab",
+        //   path: "/gitlab",
+        //   icon: <CodeIcon />,
+        // },
+        // {
+        //   label: "OneDrive",
+        //   path: "/onedrive",
+        //   icon: <CloudQueueIcon />,
+        // },
       ],
     },
     {

@@ -8,6 +8,9 @@ import { watchResetPassword } from "./saga/auth/resetPasswordSaga";
 // import { watchFetchGithubCallback } from "./saga/github/githubCallbackSaga";
 import { watchFetchGithubConnect } from "./saga/github/githubConnectSaga";
 import { watchGithubSync } from "./saga/github/githubSyncSaga";
+import { watchFetchGithubStatus } from "./saga/github/githubStatusSaga";
+import { watchFetchGithubDisconnect } from "./saga/github/githubDisconnectSaga";
+import { watchFetchGithubRepository } from "./saga/github/githubRepositorySaga";
 
 export default function* rootSaga() {
     yield all([
@@ -19,9 +22,8 @@ export default function* rootSaga() {
         // watchFetchGithubCallback(),
         watchFetchGithubConnect(),
         watchGithubSync(),
-
-
-
-
+        watchFetchGithubStatus(),
+        watchFetchGithubDisconnect(),
+        watchFetchGithubRepository(),
     ]);
 }

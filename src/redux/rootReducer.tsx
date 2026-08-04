@@ -8,6 +8,9 @@ import GithubCallbackReducer from "./reducers/github/githubCallbackReducer";
 import GithubConnectReducer from "./reducers/github/githubConnectReducer";
 import GithubSyncReducer from "./reducers/github/githubSyncReducer";
 import GithubHistoryReducer from "./reducers/github/githubHistoryReducer";
+import GithubStatusReducer from "./reducers/github/githubStatusReducer";
+import GithubDisconnectReducer from "./reducers/github/githubDisconnectReducer";
+import GithubRepositoryReducer from "./reducers/github/githubRepositoryReducer";
 import DashboardSummaryReducer from "./reducers/dashboard/dashboardSummaryReducers";
 
 const rootReducer = combineReducers({
@@ -21,6 +24,9 @@ const rootReducer = combineReducers({
    githubSyncReducer: GithubSyncReducer,
    githubHistoryReducer: GithubHistoryReducer,
    dashboardSummaryReducer: DashboardSummaryReducer,
+   githubStatusReducer: GithubStatusReducer,
+   githubDisconnectReducer: GithubDisconnectReducer,
+   githubRepositoryReducer: GithubRepositoryReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

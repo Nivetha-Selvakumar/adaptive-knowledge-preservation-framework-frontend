@@ -13,7 +13,7 @@ import {
 
 let isPrevent = false;
 
-function* fetchGithubHistorySaga(action: any): Generator<any, void, any> {
+function* fetchGithubHistorySaga(): Generator<any, void, any> {
 
     if (isPrevent) return;
 
@@ -22,50 +22,33 @@ function* fetchGithubHistorySaga(action: any): Generator<any, void, any> {
         isPrevent = true;
 
         const response = yield call(
-
             axios.get,
-
             AUTH.GITHUB_HISTORY,
-
             {
                 headers: {
                     Authorization: localStorage.getItem("token"),
                 },
             }
-
         );
 
         const data = response?.data;
 
-        yield put(
-            fetchGithubHistorySuccess(data)
-        );
+        yield put(fetchGithubHistorySuccess(data));
 
     } catch (error: any) {
 
-        const message =
-            error?.response?.data?.message ||
-            "Unable to fetch GitHub history";
-
-        yield put(
-            fetchGithubHistoryFailure(message)
-        );
-
+        const message = error?.response?.data?.message || "Unable to fetch GitHub history";
+        yield put(fetchGithubHistoryFailure(message));
         showToast(message, "error");
 
     } finally {
-
         isPrevent = false;
-
     }
 
 }
 
 export function* watchFetchGithubHistory() {
 
-    yield takeLatest(
-        GITHUB_HISTORY_REQUEST,
-        fetchGithubHistorySaga
-    );
+    yield takeLatest(GITHUB_HISTORY_REQUEST, fetchGithubHistorySaga);
 
 }
