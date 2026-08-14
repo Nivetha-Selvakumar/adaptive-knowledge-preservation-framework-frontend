@@ -1,21 +1,11 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import axios from "axios";
-
 import showToast from "../../../common-component/toastNotification";
-
 import { AUTH } from "../../endpoints/endpoints";
-
-import {
-    fetchGithubRepositorySuccess,
-    fetchGithubRepositoryFailure,
-} from "../../actions/github/githubRepositoryAction";
-
-import {
-    GITHUB_REPOSITORY_REQUEST,
-} from "../../actionTypes/github/githubRepositoryActionTypes";
+import { fetchGithubRepositorySuccess, fetchGithubRepositoryFailure, } from "../../actions/github/githubRepositoryAction";
+import { GITHUB_REPOSITORY_REQUEST, } from "../../actionTypes/github/githubRepositoryActionTypes";
 
 let isPrevent = false;
-
 function* fetchGithubRepositorySaga(): Generator<any, void, any> {
 
     if (isPrevent) return;
@@ -42,11 +32,7 @@ function* fetchGithubRepositorySaga(): Generator<any, void, any> {
             }
         );
 
-        yield put(
-            fetchGithubRepositorySuccess(
-                response.data
-            )
-        );
+        yield put(fetchGithubRepositorySuccess(response.data));
 
     } catch (error: any) {
 
@@ -54,15 +40,8 @@ function* fetchGithubRepositorySaga(): Generator<any, void, any> {
             error?.response?.data?.message ||
             error?.message ||
             "Unable to fetch GitHub repositories.";
-
-        yield put(
-            fetchGithubRepositoryFailure(message)
-        );
-
-        showToast(
-            message,
-            "error"
-        );
+        yield put(fetchGithubRepositoryFailure(message));
+        showToast(message, "error");
 
     } finally {
 

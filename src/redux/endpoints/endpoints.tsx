@@ -14,5 +14,6 @@ export const AUTH = {
     GITHUB_STATUS: `${API_BASE_URL}/github/status`,
     GITHUB_DISCONNECT: `${API_BASE_URL}/github/disconnect`,
     GITHUB_REPOSITORIES: `${API_BASE_URL}/github/repositories`,
+    GITHUB_REPOSITORY_SYNC: `${API_BASE_URL}/github/repositories/sync`,
 
 };

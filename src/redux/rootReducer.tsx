@@ -12,6 +12,7 @@ import GithubStatusReducer from "./reducers/github/githubStatusReducer";
 import GithubDisconnectReducer from "./reducers/github/githubDisconnectReducer";
 import GithubRepositoryReducer from "./reducers/github/githubRepositoryReducer";
 import DashboardSummaryReducer from "./reducers/dashboard/dashboardSummaryReducers";
+import GithubRepositorySyncReducer from "./reducers/github/githubRepositorySyncReducer";
 
 const rootReducer = combineReducers({
    userLoginReducer: UserLoginReducer,
@@ -27,6 +28,9 @@ const rootReducer = combineReducers({
    githubStatusReducer: GithubStatusReducer,
    githubDisconnectReducer: GithubDisconnectReducer,
    githubRepositoryReducer: GithubRepositoryReducer,
+   githubRepositorySyncReducer: GithubRepositorySyncReducer,
+
+
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -39,7 +39,7 @@ export const GitHubHeader: React.FC = () => {
                     <GitHubIcon
                         sx={{
                             fontSize: 42,
-                            color: "#24292E",
+                            color: "#f0f2f5ff",
                         }}
                     />
                 </div>

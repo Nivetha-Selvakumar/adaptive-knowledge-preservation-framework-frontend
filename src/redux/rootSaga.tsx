@@ -11,6 +11,7 @@ import { watchGithubSync } from "./saga/github/githubSyncSaga";
 import { watchFetchGithubStatus } from "./saga/github/githubStatusSaga";
 import { watchFetchGithubDisconnect } from "./saga/github/githubDisconnectSaga";
 import { watchFetchGithubRepository } from "./saga/github/githubRepositorySaga";
+import { watchFetchGithubRepositorySync } from "./saga/github/githubRepositorySyncSaga";
 
 export default function* rootSaga() {
     yield all([
@@ -25,5 +26,6 @@ export default function* rootSaga() {
         watchFetchGithubStatus(),
         watchFetchGithubDisconnect(),
         watchFetchGithubRepository(),
+        watchFetchGithubRepositorySync(),
     ]);
 }

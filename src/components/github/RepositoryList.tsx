@@ -12,12 +12,24 @@ import {
     GITHUB_REPOSITORY_REQUEST,
 } from "../../redux/actionTypes/github/githubRepositoryActionTypes";
 
+import {
+    GITHUB_REPOSITORY_SYNC_REQUEST,
+} from "../../redux/actionTypes/github/githubRepositorySyncActionTypes";
+
 interface RootState {
+
     githubRepositoryReducer: {
         loading: boolean;
         repositories: any[];
         error: string | null;
     };
+
+    githubRepositorySyncReducer: {
+        loading: boolean;
+        response: any;
+        error: string | null;
+    };
+
 }
 
 export const GitHubRepositoryList: React.FC = () => {
@@ -25,25 +37,41 @@ export const GitHubRepositoryList: React.FC = () => {
     const dispatch = useDispatch();
 
     const {
-
         loading,
-
         repositories,
-
     } = useSelector(
         (state: RootState) =>
             state.githubRepositoryReducer
     );
 
+    const {
+        loading: syncLoading,
+        response: syncResponse,
+    } = useSelector(
+        (state: RootState) =>
+            state.githubRepositorySyncReducer
+    );
+
     useEffect(() => {
 
         dispatch({
-
             type: GITHUB_REPOSITORY_REQUEST,
-
         });
 
     }, [dispatch]);
+
+
+    const handleSync = (
+        repositoryId: string
+    ) => {
+
+        dispatch({
+            type: GITHUB_REPOSITORY_SYNC_REQUEST,
+            payload: repositoryId,
+        });
+
+    };
+
 
     if (loading) {
 
@@ -58,6 +86,7 @@ export const GitHubRepositoryList: React.FC = () => {
         );
 
     }
+
 
     return (
 
@@ -78,6 +107,7 @@ export const GitHubRepositoryList: React.FC = () => {
                 Repositories
             </h2>
 
+
             <div
                 style={{
                     display: "grid",
@@ -85,127 +115,178 @@ export const GitHubRepositoryList: React.FC = () => {
                 }}
             >
 
-                {repositories.map((repo: any) => (
+                {repositories.map(
+                    (repo: any) => {
 
-                    <div
-                        key={repo.id}
-                        style={{
-                            border: "1px solid var(--border-color)",
-                            borderRadius: "14px",
-                            padding: "18px",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            background: "var(--bg-surface)",
-                        }}
-                    >
+                        const isCurrentRepositorySyncing =
+                            syncLoading &&
+                            syncResponse?.repositoryId === repo.id;
 
-                        <div>
+
+                        const isCurrentRepositorySynced =
+                            syncResponse?.repositoryId === repo.id &&
+                            syncResponse?.status === "ACTIVE";
+
+
+                        return (
 
                             <div
+                                key={repo.id}
                                 style={{
+                                    border:
+                                        "1px solid var(--border-color)",
+                                    borderRadius: "14px",
+                                    padding: "18px",
                                     display: "flex",
+                                    justifyContent:
+                                        "space-between",
                                     alignItems: "center",
-                                    gap: "8px",
-                                    fontWeight: 700,
-                                    fontSize: "17px",
+                                    background:
+                                        "var(--bg-surface)",
                                 }}
                             >
 
-                                <GitHubIcon />
+                                <div>
 
-                                {repo.name}
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "8px",
+                                            fontWeight: 700,
+                                            fontSize: "17px",
+                                        }}
+                                    >
 
-                            </div>
+                                        <GitHubIcon />
 
-                            <div
-                                style={{
-                                    marginTop: "8px",
-                                    color: "var(--text-secondary)",
-                                }}
-                            >
-                                {repo.description || "No description"}
-                            </div>
+                                        {repo.name}
 
-                            <div
-                                style={{
-                                    marginTop: "12px",
-                                    display: "flex",
-                                    gap: "16px",
-                                    flexWrap: "wrap",
-                                    fontSize: "13px",
-                                }}
-                            >
+                                    </div>
 
-                                <span>
 
-                                    Language :
-                                    {" "}
-                                    <strong>{repo.language}</strong>
+                                    <div
+                                        style={{
+                                            marginTop: "8px",
+                                            color:
+                                                "var(--text-secondary)",
+                                        }}
+                                    >
 
-                                </span>
+                                        {repo.description ||
+                                            "No description"}
 
-                                <span>
+                                    </div>
 
-                                    {repo.private ?
 
-                                        <>
-                                            <LockIcon
-                                                sx={{
-                                                    fontSize: 16,
-                                                    verticalAlign: "middle",
-                                                }}
-                                            />
+                                    <div
+                                        style={{
+                                            marginTop: "12px",
+                                            display: "flex",
+                                            gap: "16px",
+                                            flexWrap: "wrap",
+                                            fontSize: "13px",
+                                        }}
+                                    >
 
-                                            Private
+                                        <span>
 
-                                        </>
+                                            Language :
+                                            {" "}
 
-                                        :
+                                            <strong>
+                                                {repo.language}
+                                            </strong>
 
-                                        <>
+                                        </span>
 
-                                            <PublicIcon
-                                                sx={{
-                                                    fontSize: 16,
-                                                    verticalAlign: "middle",
-                                                }}
-                                            />
 
-                                            Public
+                                        <span>
 
-                                        </>
+                                            {repo.private ?
 
+                                                <>
+
+                                                    <LockIcon
+                                                        sx={{
+                                                            fontSize: 16,
+                                                            verticalAlign:
+                                                                "middle",
+                                                        }}
+                                                    />
+
+                                                    {" "}Private
+
+                                                </>
+
+                                                :
+
+                                                <>
+
+                                                    <PublicIcon
+                                                        sx={{
+                                                            fontSize: 16,
+                                                            verticalAlign:
+                                                                "middle",
+                                                        }}
+                                                    />
+
+                                                    {" "}Public
+
+                                                </>
+
+                                            }
+
+                                        </span>
+
+
+                                        <span>
+
+                                            Branch :
+                                            {" "}
+
+                                            {repo.defaultBranch}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <Button
+                                    variant="contained"
+                                    startIcon={
+                                        <SyncIcon />
                                     }
+                                    onClick={() =>
+                                        handleSync(
+                                            repo.id
+                                        )
+                                    }
+                                    disabled={
+                                        syncLoading
+                                    }
+                                    sx={{
+                                        textTransform:
+                                            "none",
+                                        borderRadius:
+                                            "10px",
+                                    }}
+                                >
 
-                                </span>
+                                    {syncLoading
+                                        ? "Syncing..."
+                                        : "Sync"}
 
-                                <span>
-
-                                    Branch :
-                                    {" "}
-                                    {repo.defaultBranch}
-
-                                </span>
+                                </Button>
 
                             </div>
 
-                        </div>
+                        );
 
-                        <Button
-                            variant="contained"
-                            startIcon={<SyncIcon />}
-                            sx={{
-                                textTransform: "none",
-                                borderRadius: "10px",
-                            }}
-                        >
-                            Sync
-                        </Button>
-
-                    </div>
-
-                ))}
+                    }
+                )}
 
             </div>
 
