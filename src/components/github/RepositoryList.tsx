@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -7,6 +7,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import PublicIcon from "@mui/icons-material/Public";
 
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import {
     GITHUB_REPOSITORY_REQUEST,
@@ -15,6 +16,7 @@ import {
 import {
     GITHUB_REPOSITORY_SYNC_REQUEST,
 } from "../../redux/actionTypes/github/githubRepositorySyncActionTypes";
+
 
 interface RootState {
 
@@ -32,9 +34,15 @@ interface RootState {
 
 }
 
+
 export const GitHubRepositoryList: React.FC = () => {
 
     const dispatch = useDispatch();
+
+
+    // =========================================================
+    // Repository State
+    // =========================================================
 
     const {
         loading,
@@ -44,13 +52,34 @@ export const GitHubRepositoryList: React.FC = () => {
             state.githubRepositoryReducer
     );
 
+
+    // =========================================================
+    // Sync State
+    // =========================================================
+
     const {
         loading: syncLoading,
         response: syncResponse,
+        error: syncError,
     } = useSelector(
         (state: RootState) =>
             state.githubRepositorySyncReducer
     );
+
+
+    // =========================================================
+    // Repository currently being synchronized
+    // =========================================================
+
+    const [
+        syncingRepositoryId,
+        setSyncingRepositoryId
+    ] = useState<string | null>(null);
+
+
+    // =========================================================
+    // Initial Repository API
+    // =========================================================
 
     useEffect(() => {
 
@@ -61,19 +90,144 @@ export const GitHubRepositoryList: React.FC = () => {
     }, [dispatch]);
 
 
+    // =========================================================
+    // Sync API completed
+    // =========================================================
+
+    useEffect(() => {
+
+        if (!syncResponse) {
+            return;
+        }
+
+
+        /*
+         * Sync completed successfully.
+         *
+         * Now reload repositories so that
+         * agentActive comes from backend.
+         */
+
+        if (
+            syncResponse.repositoryId &&
+            syncResponse.syncStatus === "ACTIVE"
+        ) {
+
+            dispatch({
+                type: GITHUB_REPOSITORY_REQUEST,
+            });
+
+        }
+
+    }, [
+        syncResponse,
+        dispatch,
+    ]);
+
+
+    // =========================================================
+    // Repository list finished loading
+    // =========================================================
+
+    useEffect(() => {
+
+        if (!syncingRepositoryId) {
+            return;
+        }
+
+
+        /*
+         * Find the repository that was synchronized.
+         */
+
+        const syncedRepository =
+            repositories.find(
+                (repo: any) =>
+                    String(repo.id) ===
+                    String(syncingRepositoryId)
+            );
+
+
+        /*
+         * Backend now says agent is active.
+         *
+         * Remove loader and button.
+         */
+
+        if (
+            syncedRepository &&
+            syncedRepository.agentActive === true
+        ) {
+
+            setSyncingRepositoryId(null);
+        }
+
+    }, [
+        repositories,
+        syncingRepositoryId,
+    ]);
+
+
+    // =========================================================
+    // Handle Sync
+    // =========================================================
+
     const handleSync = (
         repositoryId: string
     ) => {
 
+        /*
+         * Immediately show loader.
+         */
+
+        setSyncingRepositoryId(
+            repositoryId
+        );
+
+
         dispatch({
-            type: GITHUB_REPOSITORY_SYNC_REQUEST,
-            payload: repositoryId,
+
+            type:
+                GITHUB_REPOSITORY_SYNC_REQUEST,
+
+            payload:
+                repositoryId,
+
         });
 
     };
 
 
-    if (loading) {
+    // =========================================================
+    // If Sync failed
+    // =========================================================
+
+    useEffect(() => {
+
+        if (
+            syncError &&
+            syncingRepositoryId
+        ) {
+
+            /*
+             * Stop loader and show Sync
+             * again because synchronization failed.
+             */
+
+            setSyncingRepositoryId(null);
+        }
+
+    }, [
+        syncError,
+        syncingRepositoryId,
+    ]);
+
+
+    // =========================================================
+    // Initial Loading
+    // =========================================================
+
+    if (loading && repositories.length === 0) {
 
         return (
 
@@ -119,13 +273,11 @@ export const GitHubRepositoryList: React.FC = () => {
                     (repo: any) => {
 
                         const isCurrentRepositorySyncing =
-                            syncLoading &&
-                            syncResponse?.repositoryId === repo.id;
-
-
-                        const isCurrentRepositorySynced =
-                            syncResponse?.repositoryId === repo.id &&
-                            syncResponse?.status === "ACTIVE";
+                            syncingRepositoryId !== null &&
+                            String(
+                                syncingRepositoryId
+                            ) ===
+                            String(repo.id);
 
 
                         return (
@@ -135,26 +287,49 @@ export const GitHubRepositoryList: React.FC = () => {
                                 style={{
                                     border:
                                         "1px solid var(--border-color)",
-                                    borderRadius: "14px",
-                                    padding: "18px",
-                                    display: "flex",
+
+                                    borderRadius:
+                                        "14px",
+
+                                    padding:
+                                        "18px",
+
+                                    display:
+                                        "flex",
+
                                     justifyContent:
                                         "space-between",
-                                    alignItems: "center",
+
+                                    alignItems:
+                                        "center",
+
                                     background:
                                         "var(--bg-surface)",
                                 }}
                             >
 
+                                {/* ==========================================
+                                    Repository Details
+                                ========================================== */}
+
                                 <div>
 
                                     <div
                                         style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "8px",
-                                            fontWeight: 700,
-                                            fontSize: "17px",
+                                            display:
+                                                "flex",
+
+                                            alignItems:
+                                                "center",
+
+                                            gap:
+                                                "8px",
+
+                                            fontWeight:
+                                                700,
+
+                                            fontSize:
+                                                "17px",
                                         }}
                                     >
 
@@ -167,7 +342,9 @@ export const GitHubRepositoryList: React.FC = () => {
 
                                     <div
                                         style={{
-                                            marginTop: "8px",
+                                            marginTop:
+                                                "8px",
+
                                             color:
                                                 "var(--text-secondary)",
                                         }}
@@ -181,11 +358,20 @@ export const GitHubRepositoryList: React.FC = () => {
 
                                     <div
                                         style={{
-                                            marginTop: "12px",
-                                            display: "flex",
-                                            gap: "16px",
-                                            flexWrap: "wrap",
-                                            fontSize: "13px",
+                                            marginTop:
+                                                "12px",
+
+                                            display:
+                                                "flex",
+
+                                            gap:
+                                                "16px",
+
+                                            flexWrap:
+                                                "wrap",
+
+                                            fontSize:
+                                                "13px",
                                         }}
                                     >
 
@@ -209,13 +395,16 @@ export const GitHubRepositoryList: React.FC = () => {
 
                                                     <LockIcon
                                                         sx={{
-                                                            fontSize: 16,
+                                                            fontSize:
+                                                                16,
+
                                                             verticalAlign:
                                                                 "middle",
                                                         }}
                                                     />
 
-                                                    {" "}Private
+                                                    {" "}
+                                                    Private
 
                                                 </>
 
@@ -225,13 +414,16 @@ export const GitHubRepositoryList: React.FC = () => {
 
                                                     <PublicIcon
                                                         sx={{
-                                                            fontSize: 16,
+                                                            fontSize:
+                                                                16,
+
                                                             verticalAlign:
                                                                 "middle",
                                                         }}
                                                     />
 
-                                                    {" "}Public
+                                                    {" "}
+                                                    Public
 
                                                 </>
 
@@ -254,32 +446,102 @@ export const GitHubRepositoryList: React.FC = () => {
                                 </div>
 
 
-                                <Button
-                                    variant="contained"
-                                    startIcon={
-                                        <SyncIcon />
-                                    }
-                                    onClick={() =>
-                                        handleSync(
-                                            repo.id
-                                        )
-                                    }
-                                    disabled={
-                                        syncLoading
-                                    }
-                                    sx={{
-                                        textTransform:
-                                            "none",
-                                        borderRadius:
-                                            "10px",
-                                    }}
-                                >
+                                {/* ==========================================
+                                    Sync / Agent Status
+                                ========================================== */}
 
-                                    {syncLoading
-                                        ? "Syncing..."
-                                        : "Sync"}
+                                {repo.agentActive === true ? (
 
-                                </Button>
+                                    /*
+                                     * Agent is active.
+                                     *
+                                     * Sync button is completely removed.
+                                     */
+
+                                    <span
+                                        style={{
+                                            fontSize:
+                                                "14px",
+
+                                            fontWeight:
+                                                600,
+
+                                            whiteSpace:
+                                                "nowrap",
+                                        }}
+                                    >
+
+                                        ● Agent Active
+
+                                    </span>
+
+                                ) : isCurrentRepositorySyncing ? (
+
+                                    /*
+                                     * Sync is in progress.
+                                     *
+                                     * Button is disabled and loader shown.
+                                     */
+
+                                    <Button
+                                        variant="contained"
+                                        disabled
+                                        startIcon={
+                                            <CircularProgress
+                                                size={16}
+                                                color="inherit"
+                                            />
+                                        }
+                                        sx={{
+                                            textTransform:
+                                                "none",
+
+                                            borderRadius:
+                                                "10px",
+                                        }}
+                                    >
+
+                                        Syncing...
+
+                                    </Button>
+
+                                ) : (
+
+                                    /*
+                                     * Repository has not been synchronized.
+                                     */
+
+                                    <Button
+                                        variant="contained"
+
+                                        startIcon={
+                                            <SyncIcon />
+                                        }
+
+                                        disabled={
+                                            syncLoading
+                                        }
+
+                                        sx={{
+                                            textTransform:
+                                                "none",
+
+                                            borderRadius:
+                                                "10px",
+                                        }}
+
+                                        onClick={() =>
+                                            handleSync(
+                                                repo.id
+                                            )
+                                        }
+                                    >
+
+                                        Sync
+
+                                    </Button>
+
+                                )}
 
                             </div>
 
